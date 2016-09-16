@@ -1,9 +1,25 @@
+#coding:utf-8
 __author__ = 'tylin'
-from tokenizer.ptbtokenizer import PTBTokenizer
 from bleu.bleu import Bleu
 from meteor.meteor import Meteor
 from rouge.rouge import Rouge
 from cider.cider import Cider
+import json
+
+def dump(data, fname):
+    with open(fname, "wb") as f:
+        json.dump(data, f)
+
+def convert_data(data):
+    res = {}
+    for k, v in data.items():
+        res[k] = []
+        for item in v:
+            caption = item["caption"]
+            caption = caption.replace(u"。", u"").replace(u"、", u"").strip()
+            res[k].append(caption)
+
+    return res
 
 class COCOEvalCap:
     def __init__(self, coco, cocoRes):
@@ -26,10 +42,12 @@ class COCOEvalCap:
         # =================================================
         # Set up scorers
         # =================================================
-        print 'tokenization...'
-        tokenizer = PTBTokenizer()
-        gts  = tokenizer.tokenize(gts)
-        res = tokenizer.tokenize(res)
+        #dump(gts, "gts_before.json")
+        #dump(res, "res_before.json")
+        gts = convert_data(gts)
+        res = convert_data(res)
+        #dump(gts, "gts_after.json")
+        #dump(res, "res_after.json")
 
         # =================================================
         # Set up scorers

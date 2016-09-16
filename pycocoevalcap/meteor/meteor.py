@@ -37,7 +37,7 @@ class Meteor:
             stat = self._stat(res[i][0], gts[i])
             eval_line += ' ||| {}'.format(stat)
 
-        self.meteor_p.stdin.write('{}\n'.format(eval_line))
+        self.meteor_p.stdin.write(u"{}\n".format(eval_line).encode("utf-8"))
         for i in range(0,len(imgIds)):
             scores.append(float(self.meteor_p.stdout.readline().strip()))
         score = float(self.meteor_p.stdout.readline().strip())
@@ -52,7 +52,7 @@ class Meteor:
         # SCORE ||| reference 1 words ||| reference n words ||| hypothesis words
         hypothesis_str = hypothesis_str.replace('|||','').replace('  ',' ')
         score_line = ' ||| '.join(('SCORE', ' ||| '.join(reference_list), hypothesis_str))
-        self.meteor_p.stdin.write('{}\n'.format(score_line))
+        self.meteor_p.stdin.write(u"{}\n".format(score_line).encode("utf-8"))
         return self.meteor_p.stdout.readline().strip()
 
     def _score(self, hypothesis_str, reference_list):
@@ -72,7 +72,7 @@ class Meteor:
         self.lock.release()
         return score
  
-    def __del__(self):
+    def __exit__(self):
         self.lock.acquire()
         self.meteor_p.stdin.close()
         self.meteor_p.kill()
